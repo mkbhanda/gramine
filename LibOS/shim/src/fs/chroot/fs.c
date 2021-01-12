@@ -340,6 +340,15 @@ out:
     return ret;
 }
 
+static dev_t makedev(unsigned int major, unsigned int minor) {
+    dev_t dev;
+    dev  = (((dev_t)(major & 0x00000fffu)) <<  8);
+    dev |= (((dev_t)(major & 0xfffff000u)) << 32);
+    dev |= (((dev_t)(minor & 0x000000ffu)) <<  0);
+    dev |= (((dev_t)(minor & 0xffffff00u)) << 12);
+    return dev;
+}
+
 static int chroot_istat(struct shim_inode* inode, struct stat* buf) {
     memset(buf, 0, sizeof(*buf));
 
@@ -356,6 +365,10 @@ static int chroot_istat(struct shim_inode* inode, struct stat* buf) {
      * TODO: Make this a default for filesystems that don't provide `nlink`?
      */
     buf->st_nlink = (inode->type == FILE_DIR ? 2 : 1);
+
+    /* Dmitrii Kuvaiskii: hard-code 226:0 for rdev for now; TODO: get it from underlying dev */
+    buf->st_rdev = makedev(226, 0);
+
     unlock(&inode->lock);
     return 0;
 }
