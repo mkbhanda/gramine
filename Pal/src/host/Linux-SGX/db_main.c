@@ -42,7 +42,7 @@ static struct link_map g_pal_map;
 PAL_SESSION_KEY g_master_key = {0};
 
 /* Limit of PAL memory available for _DkVirtualMemoryAlloc(PAL_ALLOC_INTERNAL) */
-size_t g_pal_internal_mem_size = 0;
+size_t g_pal_internal_mem_size = PAL_INITIAL_MEM_SIZE;
 
 const size_t g_page_size = PRESET_PAGESIZE;
 
@@ -719,10 +719,10 @@ noreturn void pal_linux_main(char* uptr_libpal_uri, size_t libpal_uri_len, char*
     g_pal_sec.uid = sec_info.uid;
     g_pal_sec.gid = sec_info.gid;
 
-    /* set up page allocator and slab manager */
-    g_pal_internal_mem_size = PAL_INITIAL_MEM_SIZE;
+    /* Set up page allocator and slab manager. There is no need to provide any initial memory pool,
+     * because the slab manager can use normal allocations (`_DkVirtualMemoryAlloc`) right away. */
     init_enclave_pages();
-    init_slab_mgr();
+    init_slab_mgr(/*mem_pool=*/NULL, /*mem_pool_size=*/0);
     init_untrusted_slab_mgr();
 
     /* initialize enclave properties */
