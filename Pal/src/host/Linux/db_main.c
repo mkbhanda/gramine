@@ -255,7 +255,7 @@ noreturn void pal_linux_main(void* initial_rsp, void* fini_callback) {
 
     ret = add_preloaded_range((uintptr_t)init_pool_addr,
                               (uintptr_t)init_pool_addr + init_pool_size,
-                              "pal_internal_mem");
+                              "pal_init_pool");
     if (ret < 0) {
         INIT_FAIL(PAL_ERROR_NOMEM, "Out of memory");
     }

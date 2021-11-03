@@ -644,6 +644,12 @@ out:
     return ret;
 }
 
+__attribute_no_sanitize_address
+static void do_preheat_enclave(void) {
+    for (uint8_t* i = g_pal_sec.heap_min; i < (uint8_t*)g_pal_sec.heap_max; i += g_page_size)
+        READ_ONCE(*(size_t*)i);
+}
+
 /* Gramine uses GCC's stack protector that looks for a canary at gs:[0x8], but this function starts
  * with a default canary and then updates it to a random one, so we disable stack protector here */
 __attribute_no_stack_protector
@@ -839,10 +845,8 @@ noreturn void pal_linux_main(char* uptr_libpal_uri, size_t libpal_uri_len, char*
         log_error("Cannot parse 'sgx.preheat_enclave' (the value must be `true` or `false`)");
         ocall_exit(1, /*is_exitgroup=*/true);
     }
-    if (preheat_enclave) {
-        for (uint8_t* i = g_pal_sec.heap_min; i < (uint8_t*)g_pal_sec.heap_max; i += g_page_size)
-            READ_ONCE(*(size_t*)i);
-    }
+    if (preheat_enclave)
+        do_preheat_enclave();
 
     /* For backward compatibility, `loader.pal_internal_mem_size` does not include
      * PAL_INITIAL_MEM_SIZE */
