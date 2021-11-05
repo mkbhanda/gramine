@@ -892,7 +892,6 @@ noreturn void execute_elf_object(struct link_map* exec_map, void* argp, ElfW(aux
     ElfW(Addr) entry = g_interp_map ? g_interp_map->l_entry : g_exec_map->l_entry;
 
     CALL_ELF_ENTRY(entry, argp);
-
     die_or_inf_loop();
 }
 
