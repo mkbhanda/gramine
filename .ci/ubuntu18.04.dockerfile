@@ -55,6 +55,8 @@ RUN apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y \
     python3-pyelftools \
     python3-pytest \
     python3-scipy \
+    python3-sphinx \
+    python3-sphinx-rtd-theme \
     shellcheck \
     sqlite3 \
     texinfo \
@@ -69,11 +71,8 @@ RUN apt-get update && env DEBIAN_FRONTEND=noninteractive apt-get install -y \
 RUN python3 -m pip install -U \
     asv \
     recommonmark \
-    'Sphinx==1.8' \
-    'sphinx_rtd_theme<1' \
     'toml>=0.10' \
-    'meson>=0.55,<0.56' \
-    'docutils>=0.17,<0.18'
+    'meson>=0.55,<0.56'
 
 # Add the user UID:1001, GID:1001, home at /leeroy
 RUN groupadd -r leeroy -g 1001 && useradd -u 1001 -r -g leeroy -m -d /leeroy -c "Leeroy Jenkins" leeroy && \
