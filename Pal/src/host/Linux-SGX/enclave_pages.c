@@ -202,8 +202,11 @@ void* get_enclave_pages(void* addr, size_t size, bool is_pal_internal) {
 
     if (addr) {
         /* caller specified concrete address; find VMA right-above this address */
-        if (addr < g_heap_bottom || addr + size > g_heap_top)
+        if (addr < g_heap_bottom || addr + size > g_heap_top) {
+            log_warning("trying to map memory (%p-%p) outside SGX heap (%p-%p)", addr, addr + size,
+                        g_heap_top, g_heap_bottom);
             goto out;
+        }
 
         LISTP_FOR_EACH_ENTRY(vma, &g_heap_vma_list, list) {
             if (vma->bottom < addr) {
